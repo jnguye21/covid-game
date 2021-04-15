@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    [SerializeField] float followSpeed = 4f;
-    [SerializeField] int enemyDamage = 1;
+    [SerializeField] private float followSpeed = 4f;
+    [SerializeField] private int enemyDamage = 1;
+    [SerializeField] private float enemyAttackDelay = 1.2f;
+    [SerializeField] private float enemyAttackTimer = 1.2f;
+
+    bool attackReady = true;
     Transform target;
 
     void Start()
@@ -26,9 +30,22 @@ public class EnemyMovement : MonoBehaviour
         {
             transform.position = Vector2.MoveTowards(transform.position, target.transform.position, followSpeed * Time.deltaTime);
         }
-        else
+        else{ return; }
+
+        if (!attackReady)
         {
-            return;
+            enemyAttackTimer -= Time.deltaTime;
+            if(enemyAttackTimer <= 0) { attackReady = true; }
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player" && attackReady)
+        {
+            collision.gameObject.GetComponent<PlayerHealth>().TakeDamage(enemyDamage);
+            attackReady = false; //Wait a certain amount of time before able to deal damage again
+            enemyAttackTimer = enemyAttackDelay;
         }
     }
 }
