@@ -12,6 +12,8 @@ public class EnemyMovement : MonoBehaviour
     bool attackReady = true;
     Transform target;
 
+    public int health;
+
     void Start()
     {
         if (GameObject.FindGameObjectWithTag("Player") != null)
@@ -37,6 +39,11 @@ public class EnemyMovement : MonoBehaviour
             enemyAttackTimer -= Time.deltaTime;
             if(enemyAttackTimer <= 0) { attackReady = true; }
         }
+    }
+
+    public void TakeDamage(int damage){
+        health -= damage;
+        Debug.Log("damage taken");
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
